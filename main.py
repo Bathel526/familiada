@@ -70,14 +70,22 @@ class Familiada():
             self.answers.add(question)
             question.rect.left = 350
             question.rect.top = 60
+            print('--------------------------')
+            print(row[0])
             for i in range (1, int(len(row))):
                 result = [ ' '.join(row[i].split()[:-1]), int(row[i].split()[-1]) ]
                 answer = Answer(self, str(result[0]))
                 answer.rect.left = 340
                 answer.update_bottom(self.numbers, (i-1))
                 self.answers.add(answer)
-
+                print(f'{i}: {result[0]}, {result[1]}')
                 self._create_points(row)
+            print('\np -rozpocznij gre\n'
+                  'a -pokaz pozostale odpowiedzi\n'
+                  'r -zla odpowiedz prawa druzyna\n'
+                  'l - zla odpowiedz lewa druzyna\n'
+                  'n - nastepna runda\n'
+                  'q - wyjdz\n')
 
         except StopIteration:
             print('Nie ma wiecej wierszy w pliku!!!')
