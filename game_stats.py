@@ -8,6 +8,9 @@ class GameStats:
         self.settings = ai_game.settings
         self.reset_stats()
         self.beginning = 0
+        self.stop_game = False
+        self.left_result = 0
+        self.right_result = 0
 
     def reset_stats(self):
         self.error_left = 0

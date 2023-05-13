@@ -7,7 +7,6 @@ class Sum():
         self.screen = ai_game.screen
 
         self.stats = ai_game.stats
-
         self.text_color = (255, 255, 0)
         self.font_path = 'fonts/DOTMATRI.ttf'
         self.font = pygame.font.Font(self.font_path, 64)
@@ -20,5 +19,23 @@ class Sum():
         self.image = self.font.render(self.text, True, (255, 255, 0))
         self.rect = self.image.get_rect()
         self.rect.right = 1550
+        self.rect.top = 800
+        self.screen.blit(self.image, self.rect)
+
+    def prep_right_result(self):
+        self.msg = 'Suma:  '
+        self.text = f'{self.msg}{self.stats.right_result}'
+        self.image = self.font.render(self.text, True, (255, 255, 0))
+        self.rect = self.image.get_rect()
+        self.rect.right = 1800
+        self.rect.top = 800
+        self.screen.blit(self.image, self.rect)
+
+    def prep_left_result(self):
+        self.msg = 'Suma:  '
+        self.text = f'{self.msg}{self.stats.left_result}'
+        self.image = self.font.render(self.text, True, (255, 255, 0))
+        self.rect = self.image.get_rect()
+        self.rect.right = 500
         self.rect.top = 800
         self.screen.blit(self.image, self.rect)

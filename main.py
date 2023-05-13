@@ -46,7 +46,12 @@ class Familiada():
         self.errors_right = pygame.sprite.Group()
         self.play_button = Button(self, "MOSTOLIADA")
 
+        self.quit_button = Button(self, "Dziekujemy :)")
+
         self.suma = Sum(self)
+
+        self.right_result = Sum(self)
+        self.left_result = Sum(self)
 
         self.game_active = False
 
@@ -80,16 +85,16 @@ class Familiada():
                 self.answers.add(answer)
                 print(f'{i}: {result[0]}, {result[1]}')
                 self._create_points(row)
-            print('\np -rozpocznij gre\n'
-                  'a -pokaz pozostale odpowiedzi\n'
-                  'r -zla odpowiedz prawa druzyna\n'
-                  'l - zla odpowiedz lewa druzyna\n'
-                  'n - nastepna runda\n'
-                  'q - wyjdz\n')
+            print('\na -pokaz pozostale odpowiedzi\n'
+                  'j -zla odpowiedz prawa druzyna\n'
+                  'k - zla odpowiedz lewa druzyna\n'
+                  'n - przypisz punkty lewej druzynie, nastepna runda\n'
+                  'm - przypisz punkty prawej druzynie, nastepna runda\n'
+                  'q - wyjdz')
 
         except StopIteration:
-            print('Nie ma wiecej wierszy w pliku!!!')
-            self.close_file()
+            #print('Nie ma wiecej wierszy w pliku!!!')                      ######
+            self.exit_game()
 
     def _create_points(self, row):
         for i in range(1, int(len(row))):
@@ -112,7 +117,7 @@ class Familiada():
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_q:
-                    self.close_file()
+                    self.file.close()
                     sys.exit()
                 elif event.key == pygame.K_1:
                     if self.game_active and int(len(self.numbers)) >= 1:
@@ -145,24 +150,36 @@ class Familiada():
                             self.pop_odp_sound.play()
                         self.stats.fivth_answer = True
                 elif event.key == pygame.K_n:
-                    if self.game_active:
+                    if self.game_active and not self.stats.stop_game:
+                        self.stats.left_result += self.stats.suma
+                        #self.stats.right_result += self.stats.suma
+                        self.next_round_sound.play()
+                        sleep(4)
+                        self._start_game()
+                elif event.key == pygame.K_m:
+                    if self.game_active and not self.stats.stop_game:
+                        #self.stats.left_result += self.stats.suma
+                        self.stats.right_result += self.stats.suma
                         self.next_round_sound.play()
                         sleep(4)
                         self._start_game()
                 elif event.key == pygame.K_a:
-                    if self.game_active:
+                    if self.game_active and not self.stats.stop_game:
                         self.show_answers()
-                elif event.key == pygame.K_r:
-                    if self.game_active:
+                elif event.key == pygame.K_k:
+                    if self.game_active and not self.stats.stop_game:
                         self.add_error_right()
-                elif event.key == pygame.K_l:
-                    if self.game_active:
+                elif event.key == pygame.K_j:
+                    if self.game_active and not self.stats.stop_game:
                         self.add_error_left()
                 elif event.key == pygame.K_p:
-                    self._start_game()
+                    if not self.game_active and not self.stats.stop_game:
+                        self._play_beginning()
+                        self._start_game()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
+                self._check_quit_button(mouse_pos)
 
     def add_error_right(self):
         if self.stats.error_right < self.settings.errors_allowed:
@@ -214,6 +231,7 @@ class Familiada():
             self.stats.second_answer = True
         if int(len(self.answers)) >= 2:
             self.stats.first_answer = True
+        self.pop_odp_sound.play()
 
     def _check_play_button(self, mouse_pos):
         """
@@ -222,12 +240,31 @@ class Familiada():
         """
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.game_active:
+            pygame.mouse.set_visible(False)
+            self._play_beginning()
             self._start_game()
 
-    def close_file(self):
+    def _check_quit_button(self, mouse_pos):
+        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
+        if button_clicked and self.stats.stop_game:
+            sys.exit()
+
+    def _play_beginning(self):
+        self.stats.beginning += 1
+        self.beginning.play()
+        sleep(12)
+
+    def exit_game(self):
         self.file.close()
-        sleep(0.5)
-        sys.exit()
+        self.stats.stop_game = True
+        pygame.mouse.set_visible(True)
+        self.numbers.empty()
+        self.errors_right.empty()
+        self.errors_left.empty()
+        self.answers.empty()
+        self.points.empty()
+        print('--------------------------')
+        print('q -wyjdz')
 
     def _start_game(self):
         self.game_active = True
@@ -242,23 +279,30 @@ class Familiada():
 
         self._create_answers(self.file)
 
-        pygame.mouse.set_visible(False)
-
 
     def _update_screen(self):
         self.screen.blit(self.image, self.screen_rect)
         if not self.game_active:
             if self.stats.beginning == 0:
+                print()
+                print('p- rozpocznij gre')
                 self.stats.beginning += 1
-                self.beginning.play()
             self.play_button.draw_button()
+
+        elif self.stats.stop_game:
+
+            self.quit_button.draw_button()
+            self.left_result.prep_left_result()
+            self.right_result.prep_right_result()
+
         else:
             self.numbers.draw(self.screen)
             self.errors_left.draw(self.screen)
             self.errors_right.draw(self.screen)
 
             question = self.answers.sprites()[0]
-            self.screen.blit(question.image, question.rect)
+            if self.stats.first_answer or self.stats.second_answer or self.stats.third_answer or self.stats.fourth_answer or self.stats.fivth_answer or self.errors_left or self.errors_right:
+                self.screen.blit(question.image, question.rect)
 
             self.suma.prep_sum()
 
