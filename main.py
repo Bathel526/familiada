@@ -86,10 +86,11 @@ class Familiada():
                 print(f'{i}: {result[0]}, {result[1]}')
                 self._create_points(row)
             print('\na -pokaz pozostale odpowiedzi\n'
-                  'j -zla odpowiedz prawa druzyna\n'
+                  'j - zla odpowiedz prawa druzyna\n'
                   'k - zla odpowiedz lewa druzyna\n'
                   'n - przypisz punkty lewej druzynie, nastepna runda\n'
                   'm - przypisz punkty prawej druzynie, nastepna runda\n'
+                  'e - przejdz do podsumowania\n'
                   'q - wyjdz')
 
         except StopIteration:
@@ -176,6 +177,8 @@ class Familiada():
                     if not self.game_active and not self.stats.stop_game:
                         self._play_beginning()
                         self._start_game()
+                elif event.key == pygame.K_e:
+                    self.exit_game()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
