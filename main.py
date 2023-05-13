@@ -258,6 +258,8 @@ class Familiada():
         sleep(12)
 
     def exit_game(self):
+        self.next_round_sound.play()
+        sleep(4)
         self.file.close()
         self.stats.stop_game = True
         pygame.mouse.set_visible(True)
