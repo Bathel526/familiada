@@ -36,17 +36,19 @@ class Familiada():
 
         self.stats = GameStats(self)
 
-        self.file = open('data/baza.txt', 'r')
+        self.file = open('data/baza.txt', encoding='utf-8', mode='r')
 
         self.numbers = pygame.sprite.Group()
         self.answers = pygame.sprite.Group()
+        self.questions = pygame.sprite.Group()
+
         self.points = pygame.sprite.Group()
 
         self.errors_left = pygame.sprite.Group()
         self.errors_right = pygame.sprite.Group()
         self.play_button = Button(self, "MOSTOLIADA")
 
-        self.quit_button = Button(self, "Dziekujemy :)")
+        self.quit_button = Button(self, "Dziękujemy :)")
 
         self.suma = Sum(self)
 
@@ -61,24 +63,50 @@ class Familiada():
         for i in range(1, int(len(row))):
             number = Number(self, str(i)+'.')
             number.rect.left = 270
-            number.rect.centery = 200 + ( 2 * number_height * (i - 1))
+            number.rect.centery = 200 + ( 3 * number_height * (i - 1))
             self.numbers.add(number)
 
     def _create_answers(self, f):
         try:
-            reader = csv.reader(f)
+            reader = csv.reader(f, delimiter=';')
             row = next(reader)
+            if len(row[0].split()) > 7:
+                lines = []
+                current_line = ""
+                for word in row[0].split():
+                    current_line += word + "  "       # zrobienie 2 spacji bo sie zlewa
+                    if len(current_line.split()) >= 7:
+                        lines.append(current_line)
+                        current_line = ""
+                if current_line:
+                    lines.append(current_line)
+            else:
+                lines = []
+                current_line = ''
+                for word in row[0].split():
+                    current_line += word + "  "
+                lines.append(current_line)
+                # zrobienie 2 spacji zamiast jednej bo sie zlewa
 
-            self._create_numbers(row)
-
-            question = Answer(self, str(row[0]))
-            self.answers.add(question)
-            question.rect.left = 350
-            question.rect.top = 60
+            if int(len(lines)) >= 2:
+                question1 = Answer(self, str(lines[0]))
+                self.questions.add(question1)
+                question2 = Answer(self, str(lines[1]))
+                self.questions.add(question2)
+                question1.rect.centerx = self.settings.screen_width / 2
+                question1.rect.top = 25
+                question2.rect.right = question1.rect.right
+                question2.rect.top = 95
+            else:
+                question = Answer(self, str(lines[0]))
+                self.questions.add(question)
+                question.rect.centerx = self.settings.screen_width / 2
+                question.rect.top = 60
             print('--------------------------')
             print(row[0])
+            self._create_numbers(row)
             for i in range (1, int(len(row))):
-                result = [ ' '.join(row[i].split()[:-1]), int(row[i].split()[-1]) ]
+                result = [ '  '.join(row[i].split()[:-1]), int(row[i].split()[-1]) ]
                 answer = Answer(self, str(result[0]))
                 answer.rect.left = 340
                 answer.update_bottom(self.numbers, (i-1))
@@ -178,6 +206,8 @@ class Familiada():
                         self._play_beginning()
                         self._start_game()
                 elif event.key == pygame.K_e:
+                    self.next_round_sound.play()
+                    sleep(4)
                     self.exit_game()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
@@ -214,25 +244,25 @@ class Familiada():
 
     def show_answers(self):
         self.stats.game_active = True
-        if int(len(self.answers)) >= 6:
-            self.stats.first_answer = True
-            self.stats.second_answer = True
-            self.stats.third_answer = True
-            self.stats.fourth_answer = True
-            self.stats.fivth_answer = True
         if int(len(self.answers)) >= 5:
             self.stats.first_answer = True
             self.stats.second_answer = True
             self.stats.third_answer = True
             self.stats.fourth_answer = True
+            self.stats.fivth_answer = True
         if int(len(self.answers)) >= 4:
             self.stats.first_answer = True
             self.stats.second_answer = True
             self.stats.third_answer = True
+            self.stats.fourth_answer = True
         if int(len(self.answers)) >= 3:
             self.stats.first_answer = True
             self.stats.second_answer = True
+            self.stats.third_answer = True
         if int(len(self.answers)) >= 2:
+            self.stats.first_answer = True
+            self.stats.second_answer = True
+        if int(len(self.answers)) >= 1:
             self.stats.first_answer = True
         self.pop_odp_sound.play()
 
@@ -255,15 +285,14 @@ class Familiada():
     def _play_beginning(self):
         self.stats.beginning += 1
         self.beginning.play()
-        sleep(12)
+        #sleep(12)
 
     def exit_game(self):
-        self.next_round_sound.play()
-        sleep(4)
         self.file.close()
         self.stats.stop_game = True
         pygame.mouse.set_visible(True)
         self.numbers.empty()
+        self.questions.empty()
         self.errors_right.empty()
         self.errors_left.empty()
         self.answers.empty()
@@ -276,6 +305,7 @@ class Familiada():
 
         self.stats.reset_stats()
 
+        self.questions.empty()
         self.numbers.empty()
         self.errors_right.empty()
         self.errors_left.empty()
@@ -305,38 +335,44 @@ class Familiada():
             self.errors_left.draw(self.screen)
             self.errors_right.draw(self.screen)
 
-            question = self.answers.sprites()[0]
             if self.stats.first_answer or self.stats.second_answer or self.stats.third_answer or self.stats.fourth_answer or self.stats.fivth_answer or self.errors_left or self.errors_right:
-                self.screen.blit(question.image, question.rect)
+                if int(len(self.questions.sprites())) == 2:
+                    question1 = self.questions.sprites()[0]
+                    question2 = self.questions.sprites()[1]
+                    self.screen.blit(question1.image, question1.rect)
+                    self.screen.blit(question2.image, question2.rect)
+                else:
+                    question1 = self.questions.sprites()[0]
+                    self.screen.blit(question1.image, question1.rect)
 
             self.suma.prep_sum()
 
             if self.stats.first_answer:
-                answer_1 = self.answers.sprites()[1]
+                answer_1 = self.answers.sprites()[0]
                 self.screen.blit(answer_1.image, answer_1.rect)
 
                 point_1 = self.points.sprites()[0]
                 self.screen.blit(point_1.image, point_1.rect)
             if self.stats.second_answer:
-                answer_2 = self.answers.sprites()[2]
+                answer_2 = self.answers.sprites()[1]
                 self.screen.blit(answer_2.image, answer_2.rect)
 
                 point_2 = self.points.sprites()[1]
                 self.screen.blit(point_2.image, point_2.rect)
             if self.stats.third_answer:
-                answer_3 = self.answers.sprites()[3]
+                answer_3 = self.answers.sprites()[2]
                 self.screen.blit(answer_3.image, answer_3.rect)
 
                 point_3 = self.points.sprites()[2]
                 self.screen.blit(point_3.image, point_3.rect)
             if self.stats.fourth_answer:
-                answer_4 = self.answers.sprites()[4]
+                answer_4 = self.answers.sprites()[3]
                 self.screen.blit(answer_4.image, answer_4.rect)
 
                 point_4 = self.points.sprites()[3]
                 self.screen.blit(point_4.image, point_4.rect)
             if self.stats.fivth_answer:
-                answer_5 = self.answers.sprites()[5]
+                answer_5 = self.answers.sprites()[4]
                 self.screen.blit(answer_5.image, answer_5.rect)
 
                 point_5 = self.points.sprites()[4]

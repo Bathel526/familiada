@@ -14,8 +14,8 @@ class Button():
         self.width, self.height = 1400, 400
         #self.button_color = (0, 0, 0)
         self.text_color = (255, 255, 0)
-        self.font_path = 'fonts/DOTMATRI.ttf'
-        self.font = pygame.font.Font(self.font_path, 256)
+        self.font_path = 'fonts/familiada.ttf'
+        self.font = pygame.font.Font(self.font_path, 200)
 
         #utworzenie prostokata przyckisku i wysrodkowanie go
         self.rect = pygame.Rect(0, 0, self.width, self.height)

@@ -1,7 +1,5 @@
 
 class GameStats:
-    """Monitorowanie danych statystycznych w grze: ,,Inwazja obcych''."""
-
     def __init__(self, ai_game):
         """Inicjalizacja danych statystycznych"""
 
