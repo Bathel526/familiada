@@ -285,7 +285,7 @@ class Familiada():
     def _play_beginning(self):
         self.stats.beginning += 1
         self.beginning.play()
-        #sleep(12)
+        sleep(12)
 
     def exit_game(self):
         self.file.close()
