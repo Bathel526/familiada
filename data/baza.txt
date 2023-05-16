@@ -1,5 +1,5 @@
-Nazwij sport, w którym walczymy z przeciwnikiem ale go nie dotykamy; Szachy 50; Tenis ziemny/stołowy 23; Siatkówka 16; Szermierka 11; Łucznictwo/strzelectwo 3
-Jakie ciasto kojarzy Ci się z wizytą u babci?; Sernik 45; Jabłecznik 17; Szarlotka 17; Drożdżowe 14; Babka 9
-Wymień kobietę wystepująca w Piśmie Swiętym; Maryja 45; Maria Magdalena 32; Rut 18; Ewa 7; Estera 3
-Co jest w pociągu i w domu?; Okno 35; Toaleta 29; Fotele/siedzenia 27; Drzwi 9; Przeciąg 4
-Co można mierzyć?; Wzrost 28 ; Długość 17; Czas 11; Odległość 10; Siły na zamiary 5
+Nazwij sport, w którym walczymy z przeciwnikiem ale go nie dotykamy; Szachy 49; Tenis ziemny/stołowy 22; Siatkówka 15; Szermierka 11; Łucznictwo/strzelectwo 3
+Jakie ciasto kojarzy Ci się z wizytą u babci?; Sernik 44; Jabłecznik 17; Szarlotka 17; Drożdżowe 14; Babka 8
+Wymień kobietę wystepująca w Piśmie Swiętym; Maryja 43; Maria Magdalena 30; Rut 17; Ewa 7; Estera 3
+Co jest w pociągu i w domu?; Okno 34; Toaleta 28; Fotele/siedzenia 26; Drzwi 8; Przeciąg 4
+Co można mierzyć?; Wzrost 39 ; Długość 24; Czas 16; Odległość 14; Siły na zamiary 7
